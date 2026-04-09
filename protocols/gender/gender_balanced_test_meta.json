@@ -1,0 +1,15 @@
+{
+  "seed": 42,
+  "per_source": 20,
+  "inputs": {
+    "daps_csv": "../DAPS_NII/test.csv",
+    "ears_csv": "../EARS/test.csv",
+    "vctk_csv": "../VCTK/test.csv",
+    "ears_stats_json": "/datasets/EARS/speaker_statistics.json",
+    "vctk_speaker_info": "/datasets/CSTR_VCTK-Corpus/speaker-info.txt"
+  },
+  "outputs": {
+    "female_csv": "./gender_balanced_test_female_60.csv",
+    "male_csv": "./gender_balanced_test_male_60.csv"
+  }
+}

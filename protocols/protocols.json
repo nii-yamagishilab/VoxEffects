@@ -1,0 +1,18 @@
+{
+  "path_roots": {
+    "adobe_daps": "/datasets/Adobe_DAPS",
+    "ears": "/datasets/EARS",
+    "tsp": "/datasets/TSP-Speech-Database",
+    "vctk": "/datasets/CSTR_VCTK-Corpus"
+  },
+  "test": {
+    "daps_nii": "protocols/test/daps_nii_test_sample.csv",
+    "ears": "protocols/test/ears_test_sample.csv",
+    "tsp": "protocols/test/tsp_test_sample.csv",
+    "vctk": "protocols/test/vctk_test_sample.csv"
+  },
+  "gender": {
+    "female_60": "protocols/gender/gender_balanced_test_female_60.csv",
+    "male_60": "protocols/gender/gender_balanced_test_male_60.csv"
+  }
+}

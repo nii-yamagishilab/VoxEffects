@@ -1,0 +1,173 @@
+{
+  "de_noise_presets": [
+    {
+      "bypass": true,
+      "effects": []
+    },
+    {
+      "bypass": false,
+      "effects": [
+        {
+          "type": "NoiseGate",
+          "params": { "threshold_db": -50.0, "ratio": 4.0, "attack_ms": 2.0, "release_ms": 50.0 }
+        }
+      ]
+    },
+    {
+      "bypass": false,
+      "effects": [
+        {
+          "type": "NoiseGate",
+          "params": { "threshold_db": -40.0, "ratio": 8.0, "attack_ms": 1.0, "release_ms": 100.0 }
+        }
+      ]
+    }
+  ],
+
+  "dynamic_presets": [
+    {
+      "bypass": true,
+      "effects": []
+    },
+    {
+      "bypass": false,
+      "effects": [
+        { "type": "Compressor", "params": { "threshold_db": -25.0, "ratio": 2.0, "attack_ms": 10.0, "release_ms": 200.0 } },
+        { "type": "Gain",       "params": { "gain_db": 3.0 } }
+      ]
+    },
+    {
+      "bypass": false,
+      "effects": [
+        { "type": "Compressor", "params": { "threshold_db": -20.0, "ratio": 3.0,  "attack_ms": 5.0,  "release_ms": 100.0 } },
+        { "type": "Gain",       "params": { "gain_db": 3.0 } }
+      ]
+    },
+    {
+      "bypass": false,
+      "effects": [
+        { "type": "Compressor", "params": { "threshold_db": -15.0, "ratio": 5.0,  "attack_ms": 3.0,  "release_ms": 80.0  } },
+        { "type": "Gain",       "params": { "gain_db": 3.0 } }
+      ]
+    },
+    {
+      "bypass": false,
+      "effects": [
+        { "type": "Compressor", "params": { "threshold_db": -10.0, "ratio": 8.0,  "attack_ms": 1.0,  "release_ms": 50.0  } },
+        { "type": "Gain",       "params": { "gain_db": 3.0 } }
+      ]
+    }
+  ],
+
+  "eq_presets": [
+    {
+      "bypass": true,
+      "effects": []
+    },
+    {
+      "bypass": false,
+      "effects": [
+        { "type": "LowShelfFilter",  "params": { "cutoff_frequency_hz": 120.0,  "gain_db": 4.0,  "q": 0.707 } },
+        { "type": "HighShelfFilter", "params": { "cutoff_frequency_hz": 6000.0, "gain_db": 1.0,  "q": 0.707 } },
+        { "type": "PeakFilter",      "params": { "cutoff_frequency_hz": 3000.0, "gain_db": 0.0,  "q": 1.0   } }
+      ]
+    },
+    {
+      "bypass": false,
+      "effects": [
+        { "type": "LowShelfFilter",  "params": { "cutoff_frequency_hz": 120.0,  "gain_db": 0.0,  "q": 0.707 } },
+        { "type": "HighShelfFilter", "params": { "cutoff_frequency_hz": 6000.0, "gain_db": 3.0,  "q": 0.707 } },
+        { "type": "PeakFilter",      "params": { "cutoff_frequency_hz": 4000.0, "gain_db": 0.0,  "q": 1.0   } }
+      ]
+    },
+    {
+      "bypass": false,
+      "effects": [
+        { "type": "LowShelfFilter",  "params": { "cutoff_frequency_hz": 120.0,  "gain_db": 0.0,  "q": 0.707 } },
+        { "type": "HighShelfFilter", "params": { "cutoff_frequency_hz": 6000.0, "gain_db": 0.0,  "q": 0.707 } },
+        { "type": "PeakFilter",      "params": { "cutoff_frequency_hz": 2000.0, "gain_db": 3.0,  "q": 1.0   } }
+      ]
+    },
+    {
+      "bypass": false,
+      "effects": [
+        { "type": "LowShelfFilter",  "params": { "cutoff_frequency_hz": 300.0,  "gain_db": -3.0, "q": 0.707 } },
+        { "type": "HighShelfFilter", "params": { "cutoff_frequency_hz": 3500.0, "gain_db": -3.0, "q": 0.707 } },
+        { "type": "PeakFilter",      "params": { "cutoff_frequency_hz": 1000.0, "gain_db": 0.0,  "q": 1.0   } }
+      ]
+    },
+    {
+      "bypass": false,
+      "effects": [
+        { "type": "LowShelfFilter",  "params": { "cutoff_frequency_hz": 120.0,  "gain_db": 0.0,  "q": 0.707 } },
+        { "type": "HighShelfFilter", "params": { "cutoff_frequency_hz": 6000.0, "gain_db": 0.0,  "q": 0.707 } },
+        { "type": "PeakFilter",      "params": { "cutoff_frequency_hz": 3000.0, "gain_db": 0.0,  "q": 1.0   } }
+      ]
+    },
+    {
+      "bypass": false,
+      "effects": [
+        { "type": "LowShelfFilter",  "params": { "cutoff_frequency_hz": 120.0,  "gain_db": 0.0,   "q": 0.707 } },
+        { "type": "HighShelfFilter", "params": { "cutoff_frequency_hz": 6000.0, "gain_db": 0.0,   "q": 0.707 } },
+        { "type": "PeakFilter",      "params": { "cutoff_frequency_hz": 1000.0, "gain_db": -6.0,  "q": 1.0   } }
+      ]
+    }
+  ],
+
+  "de_esser_presets": [
+    {
+      "bypass": true,
+      "effects": []
+    },
+    {
+      "bypass": false,
+      "effects": [
+        { "type": "PeakFilter", "params": { "cutoff_frequency_hz": 6000.0, "gain_db": -6.0, "q": 1.0 } }
+      ]
+    },
+    {
+      "bypass": false,
+      "effects": [
+        { "type": "PeakFilter", "params": { "cutoff_frequency_hz": 6000.0, "gain_db": -12.0, "q": 1.5 } }
+      ]
+    }
+  ],
+
+  "reverb_presets": [
+    {
+      "bypass": true,
+      "effects": []
+    },
+    {
+      "bypass": false,
+      "effects": [
+        { "type": "Reverb", "params": { "room_size": 0.1, "damping": 0.2, "wet_level": 0.05, "dry_level": 0.95, "width": 0.5, "freeze_mode": 0.0 } }
+      ]
+    },
+    {
+      "bypass": false,
+      "effects": [
+        { "type": "Reverb", "params": { "room_size": 0.3, "damping": 0.3, "wet_level": 0.1,  "dry_level": 0.9,  "width": 0.5, "freeze_mode": 0.0 } }
+      ]
+    },
+    {
+      "bypass": false,
+      "effects": [
+        { "type": "Reverb", "params": { "room_size": 0.6, "damping": 0.5, "wet_level": 0.2,  "dry_level": 0.8,  "width": 0.7, "freeze_mode": 0.0 } }
+      ]
+    }
+  ],
+
+  "limiter_presets": [
+    {
+      "bypass": true,
+      "effects": []
+    },
+    {
+      "bypass": false,
+      "effects": [
+        { "type": "Limiter", "params": { "threshold_db": -3.0, "release_ms": 50.0 } }
+      ]
+    }
+  ]
+}

@@ -1,0 +1,40 @@
+# macOS / editors
+.DS_Store
+.idea/
+.vscode/
+
+# Python environments
+.venv/
+venv/
+env/
+
+# Python caches
+__pycache__/
+*.py[cod]
+*.pyo
+*.pyd
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+
+# Packaging / build outputs
+build/
+dist/
+*.egg-info/
+.eggs/
+pip-wheel-metadata/
+
+# Local outputs
+rendered/
+outputs/
+tmp/
+
+# Audio / model artifacts generated during local experiments
+*.wav
+*.flac
+*.mp3
+*.pth
+*.pt
+
+# Notebook checkpoints
+.ipynb_checkpoints/

@@ -1,0 +1,15 @@
+[build-system]
+requires = ["setuptools>=68"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "voxeffects"
+version = "0.1.0"
+description = "Dataset release utilities for VoxEffects."
+readme = "README.md"
+requires-python = ">=3.10"
+dependencies = ["pandas", "pedalboard", "soundfile", "torch", "torchaudio"]
+
+[tool.setuptools.packages.find]
+where = ["."]
+include = ["voxeffects*"]
