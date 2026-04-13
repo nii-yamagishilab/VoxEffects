@@ -169,6 +169,12 @@ VoxEffects is derived from original clean speech from the following corpora. Ple
 
 ## License
 
+This repository distributes release metadata, configuration files, and rendering scripts only. It does not redistribute the original source datasets or the fully rendered VoxEffects audio. Users must obtain the original datasets under their respective licenses and render derived audio locally.
+
+The code and release metadata in this repository are licensed under the Modified BSD (3-Clause BSD) License. See `LICENSE`.
+
+The program itself allows commercial use. However, any processed audio created using this program is subject to the license terms of the original audio data you use. For example, if you add effects with this program to audio from DAPS or EARS, which are non-commercial use only (CC BY-NC 4.0), the resulting audio will be governed by the original database license, and the effects-included audio will remain non-commercial use only (CC BY-NC 4.0). In contrast, if you add effects to audio from TSP or VCTK, which allow commercial use (CC BY 4.0), the output audio can be used commercially.
+
 The source datasets used in this work follow their original licenses:
 
 - DAPS follows CC BY-NC 4.0.
@@ -176,12 +182,6 @@ The source datasets used in this work follow their original licenses:
 - TSP follows a Simplified BSD licence.
 - VCTK uses attribution-style corpus terms in the published package.
 
-This repository distributes release metadata, configuration files, and rendering scripts only. It does not redistribute the original source datasets or the fully rendered VoxEffects audio.
-
-Because VoxEffects is derived from externally licensed speech corpora, and because the released effect protocols and rendering setup are intended for non-commercial academic reproduction, this project follows the Attribution-NonCommercial 4.0 International License.
-
-The code and release metadata in this repository are licensed under CC BY-NC 4.0. See `LICENSE`. Users must obtain the original datasets under their respective licenses and render derived audio locally.
-
-Copyright (c) 2025, Yamagishi Laboratory, National Institute of Informatics. All rights reserved.
+Copyright (c) 2026, National Institute of Informatics. All rights reserved.
 
 THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
