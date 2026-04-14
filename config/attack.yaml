@@ -1,0 +1,61 @@
+attacks:
+  # Real-world noise
+  - background_noise: 0.25   # real rooms, fans, traffic, crowd, etc.
+  - gaussian_noise:  0.05    # keep as a small proxy / fallback
+  # Lossy compression (dominant in web pipelines)
+  - aac:   0.20              # common in MP4 / streaming
+  - mp3:   0.20              # still very common for legacy / downloads
+  - vorbis: 0.05             # less common, still OK as "other lossy"
+  # Signal-chain / device issues
+  - quantization: 0.05       # bit depth / weird device chains
+  - resample:     0.20       # 44.1k ↔ 48k ↔ 16k ladders, multiple re-encodes
+
+# Mixing params
+background_noise:
+  min_snr: 10
+  max_snr: 30
+gaussian_noise:
+  std: 0.1
+  min_snr: 10
+  max_snr: 30
+# Compression params
+aac:
+  - 64k   # low quality, strong artifacts
+  - 96k   # typical web / mobile quality
+  - 128k  # common YouTube-ish "good" quality
+  - 192k  # almost transparent, for mild compression
+mp3:
+  - 64k
+  - 96k
+  - 128k
+vorbis:
+  - 64k
+  - 96k
+  - 128k
+# Neural compression params
+dac:
+  type: 44khz
+  n_codebooks:
+  - 9
+encodec:
+  type: facebook/encodec_24khz
+  n_codebooks:
+  - 32
+# Low-level augmentation params
+gain:
+  rate_intervals:
+  - [0.5, 1.5]
+resample:
+  sr_list:
+  - 16000
+  - 22050
+  - 44100
+quantization:
+  min_bits: 12
+  max_bits: 16
+time_jitter: 
+  min_scale: 0.01
+  max_scale: 0.2
+time_stretch:
+  rate_intervals:
+  - [0.95, 1.05]

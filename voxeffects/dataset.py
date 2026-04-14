@@ -4,11 +4,14 @@ from pathlib import Path
 from typing import Any, Dict, Sequence, Tuple
 
 import pandas as pd
+import random
+import numpy as np
 import torch
 import torchaudio
 from torch.utils.data import Dataset
 
 from .audio_io import load_audio
+from .degradations import AudioAttack
 from .effects import (
     EFFECT_NAMES,
     build_board_from_indices,
@@ -45,6 +48,17 @@ class VoxEffectsDataset(Dataset):
         input_sec: float | None = 6.0,
         deterministic_seed: int = 42,
         path_prefix_map: Sequence[Tuple[str, str]] | None = None,
+        apply_audio_attacks_pre: bool = False,
+        apply_audio_attacks_post: bool = False,
+        apply_audio_attacks_both: bool = False,
+        apply_single_audio_attack: bool = True,
+        attacks_config_path: str | Path | None = None,
+        mixing_data_dir: str | None = None,
+        mixing_train_filepath: str | None = None,
+        ffmpeg4codecs: str | None = None,
+        deterministic_aug: bool = False,
+        deterministic_aug_seed: int | None = None,
+        aug_prob: float = 1.0,
     ) -> None:
         super().__init__()
         self.dataset_csv = str(dataset_csv)
@@ -64,8 +78,30 @@ class VoxEffectsDataset(Dataset):
         self.mono = bool(mono)
         self.input_sec = None if input_sec is None else float(input_sec)
         self.deterministic_seed = int(deterministic_seed)
+        self.apply_audio_attacks_pre = bool(apply_audio_attacks_pre)
+        self.apply_audio_attacks_post = bool(apply_audio_attacks_post)
+        self.apply_audio_attacks_both = bool(apply_audio_attacks_both)
+        self.deterministic_aug = bool(deterministic_aug)
+        self.deterministic_aug_seed = (
+            self.deterministic_seed if deterministic_aug_seed is None else int(deterministic_aug_seed)
+        )
+        self.aug_prob = float(aug_prob)
         self._resamplers: Dict[int, torchaudio.transforms.Resample] = {}
         self._board_cache: Dict[int, Any] = {}
+
+        self.attack = None
+        if self.apply_audio_attacks_pre or self.apply_audio_attacks_post:
+            if attacks_config_path is None:
+                raise ValueError("attacks_config_path is required when degradations are enabled.")
+            self.attack = AudioAttack(
+                data_dir=mixing_data_dir,
+                mode="train",
+                config_path=str(attacks_config_path),
+                ffmpeg4codecs=ffmpeg4codecs,
+                mixing_train_filepath=mixing_train_filepath,
+                single_attack=apply_single_audio_attack,
+                device="cpu",
+            )
 
     def __len__(self) -> int:
         return len(self.files) * self.combos_per_file
@@ -91,6 +127,24 @@ class VoxEffectsDataset(Dataset):
         if not pad_short:
             return waveform
         return torch.nn.functional.pad(waveform, (0, target_t - waveform.shape[-1]))
+
+    def _audio_attacks_mode_tag(self) -> str:
+        if self.apply_audio_attacks_pre and not self.apply_audio_attacks_post:
+            return "pre_only"
+        if (not self.apply_audio_attacks_pre) and self.apply_audio_attacks_post:
+            return "post_only"
+        if self.apply_audio_attacks_pre and self.apply_audio_attacks_post:
+            return "pre_and_post" if self.apply_audio_attacks_both else "pre_or_post"
+        return "none"
+
+    def _should_augment(self, rng: torch.Generator | None = None) -> bool:
+        if not (self.apply_audio_attacks_pre or self.apply_audio_attacks_post):
+            return False
+        if self.aug_prob >= 1.0:
+            return True
+        if self.aug_prob <= 0.0:
+            return False
+        return torch.rand((), generator=rng).item() < self.aug_prob
 
     def _to_fbank(self, waveform: torch.Tensor, seed: int) -> torch.Tensor:
         wf = waveform - waveform.mean()
@@ -122,7 +176,13 @@ class VoxEffectsDataset(Dataset):
         file_idx = int(index) // self.combos_per_file
         variant_id = int(index) % self.combos_per_file
         wav_path = self.files[file_idx]
-        item_seed = stable_item_seed(self.deterministic_seed, wav_path, variant_id, "none")
+        item_seed = stable_item_seed(
+            self.deterministic_aug_seed if self.deterministic_aug else self.deterministic_seed,
+            wav_path,
+            variant_id,
+            self._audio_attacks_mode_tag(),
+        )
+        rng = torch.Generator().manual_seed(item_seed)
 
         board = self._board_cache.get(variant_id)
         chosen_groups = None
@@ -141,20 +201,71 @@ class VoxEffectsDataset(Dataset):
             waveform = waveform.mean(dim=0, keepdim=True)
         waveform = self._crop_or_pad_from_start(waveform, orig_sr)
 
-        effected = board(waveform.numpy().astype("float32"), orig_sr)
-        effected = torch.from_numpy(effected)
-        cur_sr = orig_sr
-        resampler = self._ensure_resampler(cur_sr)
-        if resampler is not None:
-            effected = resampler(effected)
-            cur_sr = self.samplerate
+        attack_type_pre = "n/a"
+        attack_type_post = "n/a"
+        do_aug = self._should_augment(rng if self.deterministic_aug else None)
+        apply_audio_attacks_pre = False
+        apply_audio_attacks_post = False
 
-        if self.return_fbank:
-            if effected.shape[0] > 1:
-                effected = effected.mean(dim=0, keepdim=True)
-            x = self._to_fbank(effected, item_seed)
-        else:
-            x = effected
+        if do_aug:
+            if self.apply_audio_attacks_pre and not self.apply_audio_attacks_post:
+                apply_audio_attacks_pre = True
+            elif (not self.apply_audio_attacks_pre) and self.apply_audio_attacks_post:
+                apply_audio_attacks_post = True
+            elif self.apply_audio_attacks_pre and self.apply_audio_attacks_post:
+                if self.apply_audio_attacks_both:
+                    apply_audio_attacks_pre = True
+                    apply_audio_attacks_post = True
+                else:
+                    random_choice = torch.randint(0, 2, (1,), generator=rng if self.deterministic_aug else None).item()
+                    apply_audio_attacks_pre = random_choice == 0
+                    apply_audio_attacks_post = random_choice == 1
+
+        _py_state = random.getstate()
+        _np_state = np.random.get_state()
+        _torch_state = torch.random.get_rng_state()
+        if self.deterministic_aug:
+            random.seed(item_seed)
+            np.random.seed(item_seed % (2**32 - 1))
+            torch.manual_seed(item_seed)
+
+        try:
+            if apply_audio_attacks_pre:
+                waveform, attack_type_pre, _ = self.attack(
+                    audio=waveform,
+                    audio_sr=orig_sr,
+                    return_attack_params=True,
+                )
+                waveform = waveform.squeeze(0)
+
+            effected = board(waveform.numpy().astype("float32"), orig_sr)
+            effected = torch.from_numpy(effected)
+            cur_sr = orig_sr
+
+            if apply_audio_attacks_post:
+                effected, attack_type_post, _ = self.attack(
+                    audio=effected,
+                    audio_sr=cur_sr,
+                    return_attack_params=True,
+                )
+                effected = effected.squeeze(0)
+
+            resampler = self._ensure_resampler(cur_sr)
+            if resampler is not None:
+                effected = resampler(effected)
+                cur_sr = self.samplerate
+
+            if self.return_fbank:
+                if effected.shape[0] > 1:
+                    effected = effected.mean(dim=0, keepdim=True)
+                x = self._to_fbank(effected, item_seed)
+            else:
+                x = effected
+        finally:
+            if self.deterministic_aug:
+                random.setstate(_py_state)
+                np.random.set_state(_np_state)
+                torch.random.set_rng_state(_torch_state)
 
         label_row = self.class_map[variant_id]
         binary_id = int(label_row["binary_class_id"])
@@ -170,6 +281,17 @@ class VoxEffectsDataset(Dataset):
             "orig_sr": orig_sr,
             "final_sr": cur_sr,
             "seed": item_seed,
+            "attack_type_pre": attack_type_pre,
+            "attack_type_post": attack_type_post,
+            "attack_type": (
+                f"pre:{attack_type_pre} | post:{attack_type_post}"
+                if apply_audio_attacks_pre and apply_audio_attacks_post
+                else f"pre:{attack_type_pre}"
+                if apply_audio_attacks_pre
+                else f"post:{attack_type_post}"
+                if apply_audio_attacks_post
+                else "n/a"
+            ),
         }
         if chosen_groups is not None:
             item["effect_groups"] = chosen_groups

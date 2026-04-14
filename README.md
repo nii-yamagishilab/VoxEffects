@@ -14,6 +14,7 @@ The rendered audio files are not included. VoxEffects is derived from source utt
 ```text
 config/
   speech_effect_chain_v2.json   # six effect groups and Pedalboard parameters
+  attack.yaml                   # degradation settings used in robustness experiments
   class_map.csv                 # 2,520 effect-combination labels
 protocols/
   test/                         # fixed DAPS-NII, EARS, TSP, and VCTK test protocols
@@ -23,6 +24,7 @@ scripts/
   check_reproducibility.py      # local deterministic rendering check
 voxeffects/
   dataset.py                    # on-the-fly data loader
+  degradations/                 # pre/post capture and platform degradations
   effects.py                    # preset, label, and deterministic-id utilities
 ```
 
@@ -63,6 +65,16 @@ This writes:
 
 One clean input utterance expands to 2520 rendered outputs if you materialize every effect combination locally. That is manageable for a small protocol, but it grows quickly for larger source sets, which is why we recommend the on-the-fly loader for most training and evaluation workflows.
 
+To reproduce the robustness experiments, the renderer and loader also support the same degradation modes used in the paper:
+
+- `none`
+- `pre_only`
+- `post_only`
+- `pre_or_post`
+- `pre_and_post`
+
+These degradations cover background noise, Gaussian noise, AAC/MP3/Vorbis compression, quantization, and resampling, using the public [attack.yaml](/Users/zhangzhe/VibeProjects/AudioMAE/VoxEffects/config/attack.yaml) configuration.
+
 ## Use the On-The-Fly Loader
 
 ```python
@@ -86,6 +98,67 @@ batch = next(iter(loader))
 
 Each item corresponds to `(source file, variant id)`, where `variant id == main_class_id`.
 The dataset length is `number_of_source_files * 2520`.
+
+To enable degradation in the on-the-fly loader:
+
+```python
+dataset = VoxEffectsDataset(
+    dataset_csv="protocols/test/vctk_test_sample.csv",
+    presets_json="config/speech_effect_chain_v2.json",
+    class_map_csv="config/class_map.csv",
+    attacks_config_path="config/attack.yaml",
+    apply_audio_attacks_pre=True,
+    apply_audio_attacks_post=True,
+    apply_audio_attacks_both=False,   # pre_or_post
+    deterministic_aug=True,
+    deterministic_aug_seed=42,
+    ffmpeg4codecs="/path/to/ffmpeg",
+    mixing_data_dir="/path/to/noise_root",
+    mixing_train_filepath="/path/to/noise_manifest.csv",
+    path_prefix_map=[
+        ("/datasets/CSTR_VCTK-Corpus", "/data/CSTR_VCTK-Corpus"),
+    ],
+)
+```
+
+For deterministic benchmark reproduction with degradations, keep `deterministic_aug=True`, keep the same `deterministic_aug_seed`, and keep the same path remapping and attack config across runs.
+
+### Noise Dataset For `background_noise`
+
+The `background_noise` degradation used in the paper experiments relies on the DEMAND noise corpus:
+
+- Joachim Thiemann, Nobutaka Ito, and Emmanuel Vincent, "The Diverse Environments Multi-Channel Acoustic Noise Database (DEMAND): A database of multichannel environmental noise recordings," 2013.
+- Dataset: [Zenodo](https://zenodo.org/records/1227121)
+- Dataset index: [DCASE datalist entry](https://dcase-repo.github.io/dcase_datalist/datasets/scenes/demand.html)
+- License: CC BY-SA 3.0, as listed on the Zenodo record
+
+The repository already includes the noise manifest format expected by the attack code in [config/attack.yaml](/Users/zhangzhe/VibeProjects/AudioMAE/VoxEffects/config/attack.yaml): each row contains a relative `audio_filepath`, plus duration and sample rate metadata.
+
+To reproduce the paper's `background_noise` setup:
+
+1. Download the DEMAND archive from Zenodo.
+2. Extract the noise WAV directories under one root folder, for example:
+   - `/data/DEMAND/SCAFE_48k/...`
+   - `/data/DEMAND/DKITCHEN_16k/...`
+3. Prepare a `|`-delimited manifest with the same columns as the project metadata:
+   - `audio_filepath|duration|sample_rate`
+4. Pass that root and manifest to the loader or renderer:
+
+```bash
+python scripts/render_dataset.py \
+  --dataset-csv protocols/test/vctk_test_sample.csv \
+  --output-dir rendered/vctk_test_pre_only \
+  --aug-mode pre_only \
+  --attacks-config-path config/attack.yaml \
+  --mixing-data-dir /data/DEMAND \
+  --mixing-train-filepath path/to/demand_metadata.csv \
+  --ffmpeg4codecs /path/to/ffmpeg \
+  --deterministic-aug \
+  --deterministic-aug-seed 42 \
+  --path-prefix-map /datasets/CSTR_VCTK-Corpus=/data/CSTR_VCTK-Corpus
+```
+
+If you do not need the `background_noise` degradation, you can still reproduce the other degradations with `attack.yaml` alone, plus `ffmpeg` for codec-based attacks.
 
 ## Test Protocols
 
@@ -166,6 +239,11 @@ VoxEffects is derived from original clean speech from the following corpora. Ple
   Dataset: [University of Edinburgh DataShare](https://doi.org/10.7488/ds/2645)
   Corpus page: [DataShare handle](https://datashare.ed.ac.uk/handle/10283/3443)
   License: attribution-style corpus terms in the published package
+- DEMAND:
+  Joachim Thiemann, Nobutaka Ito, and Emmanuel Vincent, "The Diverse Environments Multi-Channel Acoustic Noise Database (DEMAND): A database of multichannel environmental noise recordings," 2013.
+  Dataset: [Zenodo](https://zenodo.org/records/1227121)
+  Dataset index: [DCASE datalist entry](https://dcase-repo.github.io/dcase_datalist/datasets/scenes/demand.html)
+  License: CC BY-SA 3.0
 
 ## License
 
@@ -181,6 +259,7 @@ The source datasets used in this work follow their original licenses:
 - EARS follows CC BY-NC 4.0.
 - TSP follows a Simplified BSD licence.
 - VCTK uses attribution-style corpus terms in the published package.
+- DEMAND follows CC BY-SA 3.0.
 
 Copyright (c) 2026, National Institute of Informatics. All rights reserved.
 

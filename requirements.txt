@@ -1,5 +1,6 @@
 pandas
 pedalboard
+PyYAML
 soundfile
 torch
 torchaudio
