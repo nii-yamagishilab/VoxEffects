@@ -1,6 +1,8 @@
 # VoxEffects: A Speech-Oriented Audio Effects Dataset and Benchmark
 
-This repository releases reproducibility utilities for the VoxEffects datasets described in our paper.
+Paper: [arXiv:2604.12389](https://arxiv.org/abs/2604.12389)
+
+This repository releases reproducibility utilities for the VoxEffects datasets described in our paper. If you use this program, please cite the paper above.
 
 The rendered audio files are not included. VoxEffects is derived from source utterances in external speech datasets, so this release provides:
 
@@ -244,6 +246,12 @@ VoxEffects is derived from original clean speech from the following corpora. Ple
   Dataset: [Zenodo](https://zenodo.org/records/1227121)
   Dataset index: [DCASE datalist entry](https://dcase-repo.github.io/dcase_datalist/datasets/scenes/demand.html)
   License: CC BY-SA 3.0
+
+## Citation
+
+If you use this program, please cite:
+
+> VoxEffects: A Speech-Oriented Audio Effects Dataset and Benchmark. [arXiv:2604.12389](https://arxiv.org/abs/2604.12389)
 
 ## License
 
