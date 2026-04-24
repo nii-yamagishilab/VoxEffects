@@ -2,7 +2,7 @@
 
 Paper: [arXiv:2604.12389](https://arxiv.org/abs/2604.12389)
 
-This repository releases reproducibility utilities for the VoxEffects datasets described in our paper. If you use this program, please cite the paper above.
+This repository releases reproducibility utilities for the VoxEffects datasets described in our paper. **If you use this program or the VoxEffects database, you must cite the paper above.** See the [Citation](#citation) section for details.
 
 The rendered audio files are not included. VoxEffects is derived from source utterances in external speech datasets, so this release provides:
 
@@ -249,9 +249,20 @@ VoxEffects is derived from original clean speech from the following corpora. Ple
 
 ## Citation
 
-If you use this program, please cite:
+If you use this program, the VoxEffects database, or any derived audio produced with this code in your research or product, you are required to cite the following paper:
 
-> VoxEffects: A Speech-Oriented Audio Effects Dataset and Benchmark. [arXiv:2604.12389](https://arxiv.org/abs/2604.12389)
+> *VoxEffects: A Speech-Oriented Audio Effects Dataset and Benchmark.* arXiv preprint [arXiv:2604.12389](https://arxiv.org/abs/2604.12389).
+
+BibTeX:
+
+```bibtex
+@article{voxeffects2026,
+  title  = {VoxEffects: A Speech-Oriented Audio Effects Dataset and Benchmark},
+  journal = {arXiv preprint arXiv:2604.12389},
+  year   = {2026},
+  url    = {https://arxiv.org/abs/2604.12389}
+}
+```
 
 ## License
 
