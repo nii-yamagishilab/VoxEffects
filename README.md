@@ -2,7 +2,7 @@
 
 Paper: [arXiv:2604.12389](https://arxiv.org/abs/2604.12389)
 
-This repository releases reproducibility utilities for the VoxEffects datasets described in our paper. **If you use this program or the VoxEffects database, you must cite the paper above.** See the [Citation](#citation) section for details.
+This repository releases reproducibility utilities for the VoxEffects datasets described in our paper. **If you use this program or the VoxEffects database, please kindly cite the paper above.** See the [Citation](#citation) section for details.
 
 The rendered audio files are not included. VoxEffects is derived from source utterances in external speech datasets, so this release provides:
 
