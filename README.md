@@ -251,16 +251,21 @@ VoxEffects is derived from original clean speech from the following corpora. Ple
 
 If you use this program, the VoxEffects database, or any derived audio produced with this code in your research or product, you are required to cite the following paper:
 
-> *VoxEffects: A Speech-Oriented Audio Effects Dataset and Benchmark.* arXiv preprint [arXiv:2604.12389](https://arxiv.org/abs/2604.12389).
+> Zhe Zhang, Yigitcan Özer, and Junichi Yamagishi. *VoxEffects: A Speech-Oriented Audio Effects Dataset and Benchmark.* arXiv preprint [arXiv:2604.12389](https://arxiv.org/abs/2604.12389), 2026.
 
 BibTeX:
 
 ```bibtex
-@article{voxeffects2026,
-  title  = {VoxEffects: A Speech-Oriented Audio Effects Dataset and Benchmark},
-  journal = {arXiv preprint arXiv:2604.12389},
-  year   = {2026},
-  url    = {https://arxiv.org/abs/2604.12389}
+@article{zhang2026voxeffects,
+  title         = {VoxEffects: A Speech-Oriented Audio Effects Dataset and Benchmark},
+  author        = {Zhang, Zhe and {\"O}zer, Yigitcan and Yamagishi, Junichi},
+  journal       = {arXiv preprint arXiv:2604.12389},
+  year          = {2026},
+  eprint        = {2604.12389},
+  archivePrefix = {arXiv},
+  primaryClass  = {eess.AS},
+  doi           = {10.48550/arXiv.2604.12389},
+  url           = {https://arxiv.org/abs/2604.12389}
 }
 ```
 
